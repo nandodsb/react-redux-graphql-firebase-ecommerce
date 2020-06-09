@@ -1,6 +1,5 @@
 export const firebaseConfig = {
   /**
-   * Your Firebase SDK snippet CDN here.
-   */
-  
+   * Your Firebase SDK snippet Config here.
+   */     
 };
