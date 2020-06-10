@@ -1,5 +1,4 @@
 export const firebaseConfig = {
   /**
-   * Your Firebase SDK snippet Config here.
-   */     
-};
+   * Your Firebase SDK snippet Config here.   */   
+ };
