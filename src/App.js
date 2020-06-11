@@ -1,51 +1,53 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import { auth, handleUserProfile } from './firebase/utils';
-import { setCurrentUser }  from './redux/User/user.actions'
+import { setCurrentUser } from './redux/User/user.actions';
 
+//high order component
+import WithAuth from './hoc/withAuth';
 
+// layouts
 import MainLayout from './layouts/MainLayout';
 import HomepageLayout from './layouts/HomepageLayout';
 
+// pages
 import Homepage from './pages/Homepage';
 import Registration from './pages/Registration';
 import Login from './pages/Login';
-import Recovery from './pages/Recovery'
+import Recovery from './pages/Recovery';
+import Dashboard from './pages/Dashboard';
+
+//style
 import './default.scss';
 
+const App = props =>  {  
 
 
-class App extends Component {  
+  const { setCurrentUser } = props;
+
+  useEffect(() => {      
   
-
-  authListener = null;
-
-  componentDidMount() {
-    const { setCurrentUser } = this.props;
-
-    this.authListener = auth.onAuthStateChanged(async userAuth => {
-      if (userAuth) {
-        const userRef = await handleUserProfile(userAuth);
-        userRef.onSnapshot(snapshot => {
-          setCurrentUser({
+      const authListener = auth.onAuthStateChanged(async userAuth => {
+        if (userAuth) {
+          const userRef = await handleUserProfile(userAuth);
+          userRef.onSnapshot(snapshot => {
+            setCurrentUser({
               id: snapshot.id,
-              ...snapshot.data()            
-          });
-        })
-      }
-
-      setCurrentUser(userAuth)
-    });
-  }
-
-  componentWillUnmount() {
-    this.authListener();
-  }
-
-  render() {
-    const { currentUser } = this.props;
-
+              ...snapshot.data()
+            });
+          })
+        }
+  
+        setCurrentUser(userAuth);
+      });    
+    
+    return () => {
+      authListener();
+    };
+  },[setCurrentUser]);
+  
+   
     return (
       <div className="App">
         <Switch>
@@ -60,10 +62,7 @@ class App extends Component {
           />
           <Route
             path="/registration"
-            render={() =>
-              currentUser ? (
-                <Redirect to="/" />
-              ) : (
+            render={() => (
                 <MainLayout>
                   <Registration />
                 </MainLayout>
@@ -72,17 +71,13 @@ class App extends Component {
           />
           <Route
             path="/login"
-            render={() =>
-              currentUser ? (
-                <Redirect to="/" />
-              ) : (
+            render={() => (
                 <MainLayout>
                   <Login />
                 </MainLayout>
               )
             }
           />
-
           <Route
             path="/recovery"
             render={() => (
@@ -91,11 +86,22 @@ class App extends Component {
               </MainLayout>
             )}
           />
+
+          <Route
+            path="/dashboard"
+            render={() => (
+              <WithAuth>
+                <MainLayout>
+                  <Dashboard />
+                </MainLayout>
+              </WithAuth>
+            )}
+          />
         </Switch>
       </div>
     );
   }
-}
+
 
 const mapStateToProps = ({ user }) => ({
   currentUser: user.currentUser
