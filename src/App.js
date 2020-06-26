@@ -13,6 +13,9 @@ import WithAdminAuth from './hoc/withAdminAuth';
 // layouts
 import MainLayout from './layouts/MainLayout';
 import HomepageLayout from './layouts/HomepageLayout';
+import AdminLayout from './layouts/AdminLayout';
+import DashboardLayout from './layouts/DashboardLayout';
+
 
 // pages
 import Homepage from './pages/Homepage';
@@ -25,78 +28,57 @@ import Admin from './pages/Admin';
 //style
 import './default.scss';
 
-const App = props =>  {  
+const App = props => {
+  const dispatch = useDispatch();
 
-  const dispatch = useDispatch();  
-
-  useEffect(() => { 
+  useEffect(() => {
     dispatch(checkUserSession());
-  },[dispatch]);
-  
-   
-    return (
-      <div className="App">
-        <AdminToolbar/>
-        <Switch>
-          <Route
-            exact
-            path="/"
-            render={() => (
-              <HomepageLayout>
-                <Homepage />
-              </HomepageLayout>
-            )}
-          />
-          <Route
-            path="/registration"
-            render={() => (
-              <MainLayout>
-                <Registration />
-              </MainLayout>
-            )}
-          />
-          <Route
-            path="/login"
-            render={() => (
-              <MainLayout>
-                <Login />
-              </MainLayout>
-            )}
-          />
-          <Route
-            path="/recovery"
-            render={() => (
-              <MainLayout>
-                <Recovery />
-              </MainLayout>
-            )}
-          />
 
-          <Route
-            path="/dashboard"
-            render={() => (
-              <WithAuth>
-                <MainLayout>
-                  <Dashboard />
-                </MainLayout>
-              </WithAuth>
-            )}
-          />
+  }, [dispatch]);
 
-          <Route
-            path="/admin"
-            render={() => (
-              <WithAdminAuth>
-                <MainLayout>
-                  <Admin />
-                </MainLayout>
-              </WithAdminAuth>
-            )}
-          />
-        </Switch>
-      </div>
-    );
-  }
-
+  return (
+    <div className="App">
+      <AdminToolbar />
+      <Switch>
+        <Route exact path="/" render={() => (
+          <HomepageLayout>
+            <Homepage />
+          </HomepageLayout>
+        )}
+        />
+        <Route path="/registration" render={() => (
+          <MainLayout>
+            <Registration />
+          </MainLayout>
+        )} />
+        <Route path="/login"
+          render={() => (
+            <MainLayout>
+              <Login />
+            </MainLayout>
+          )} />
+        <Route path="/recovery" render={() => (
+          <MainLayout>
+            <Recovery />
+          </MainLayout>
+        )} />
+        <Route path="/dashboard" render={() => (
+          <WithAuth>
+            <DashboardLayout>
+              <Dashboard />
+            </DashboardLayout>
+          </WithAuth>
+        )} />
+        <Route path="/admin" render={() => (
+          <WithAdminAuth>
+            <AdminLayout>
+              <Admin />
+            </AdminLayout>
+          </WithAdminAuth>
+        )} />
+      </Switch>
+    </div>
+  );
+}
 
 export default App;
